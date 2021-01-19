@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'instagapp',
 ]
 
 MIDDLEWARE = [
@@ -75,6 +76,15 @@ WSGI_APPLICATION = 'Instaproject.wsgi.application'
 
 DATABASES = {
     'default': {
+        'ENGINE':'django.db.backends.mysql',
+        'USER':'root',
+        'HOST':'localhost',
+        'NAME':'instadb',
+        'PASSWORD':'shraddha',
+        'PORT':3306
+    },
+
+    'second': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
