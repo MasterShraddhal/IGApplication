@@ -1,7 +1,32 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.auth.base_user import AbstractBaseUser
+from django.contrib.auth.models import PermissionsMixin
 
 # Create your models here.
+
+
+class CustomUser(AbstractBaseUser,PermissionsMixin):
+    email=models.EmailField('email',unique=True)
+    first_name=models.CharField(max_length=80)
+    last_name=models.CharField(max_length=100)
+    age=models.IntegerField()
+    username=models.CharField(max_length=100)
+    is_active=models.BooleanField(default=True)
+    is_staff=models.BooleanField(default=False)
+    is_superuser=models.BooleanField(default=False)
+    created_on=models.DateTimeField(auto_now_add=True)
+    updated_at=models.DateTimeField(auto_now=True)
+    profile=models.ImageField()
+
+
+
+
+
+
+
+
+
 
 
 class Posts(models.Model):
@@ -20,6 +45,7 @@ class FollowerInfo(models.Model):
         User, on_delete=models.CASCADE, related_name='followers')
     following = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='following')
+    followed_on=models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = [['follower', 'following']]
@@ -31,6 +57,7 @@ class Likes(models.Model):
         User, on_delete=models.CASCADE, related_name='likes')
     postliked = models.ForeignKey(
         Posts, on_delete=models.CASCADE, related_name='likes')
+    liked_on=models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = [['like', 'postliked']]
@@ -43,6 +70,7 @@ class Commemts(models.Model):
     postid = models.ForeignKey(
         Posts, on_delete=models.CASCADE, related_name='comment')
     comment = models.TextField()
+    commented_on=models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'Comments'
