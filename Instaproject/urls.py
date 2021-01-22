@@ -15,7 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from instagapp.views import RegUser
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('createuser/',RegUser.as_view()),
 ]

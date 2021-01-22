@@ -2,22 +2,51 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
+from Instaproject.settings import MEDIA_ROOT
+from .managers import CustomManager
+import os
 
 # Create your models here.
 
 
-class CustomUser(AbstractBaseUser,PermissionsMixin):
+class User(AbstractBaseUser,PermissionsMixin):
     email=models.EmailField('email',unique=True)
     first_name=models.CharField(max_length=80)
     last_name=models.CharField(max_length=100)
     age=models.IntegerField()
-    username=models.CharField(max_length=100)
-    is_active=models.BooleanField(default=True)
-    is_staff=models.BooleanField(default=False)
-    is_superuser=models.BooleanField(default=False)
+    username=models.CharField(max_length=100,unique=True)
+    active=models.BooleanField(default=True)
+    staff=models.BooleanField(default=False)
+    superuser=models.BooleanField(default=False)
     created_on=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
-    profile=models.ImageField()
+    profile=models.ImageField(upload_to='profile/',default=os.path.join(MEDIA_ROOT,'sample.jpg'))
+
+    objects=CustomManager()
+
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['first_name','last_name','email','age']
+
+    def __str__(self):
+        return self.email
+
+
+    def get_full_name(self):
+        name="{},{}".format(self.first_name,self.last_name)
+        return name
+    
+    def get_email(self):
+        return "{}".format(self.email)
+
+    @property
+    def is_active(self):
+        return self.active
+    @property
+    def is_staff(self):
+        return self.staff
+    @property
+    def is_superuser(self):
+        return self.superuser
 
 
 
