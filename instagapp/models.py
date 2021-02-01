@@ -21,6 +21,7 @@ class User(AbstractBaseUser,PermissionsMixin):
     created_on=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
     profile=models.ImageField(upload_to='profile/',default=os.path.join(MEDIA_ROOT,'sample.jpg'))
+    status=models.CharField(max_length=20,default="Public")
 
     objects=CustomManager()
 
@@ -49,15 +50,6 @@ class User(AbstractBaseUser,PermissionsMixin):
         return self.superuser
 
 
-
-
-
-
-
-
-
-
-
 class Posts(models.Model):
     img = models.ImageField()
     caption = models.TextField()
@@ -75,6 +67,7 @@ class FollowerInfo(models.Model):
     following = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='following')
     followed_on=models.DateTimeField(auto_now_add=True)
+    status=models.CharField(max_length=20)
 
     class Meta:
         unique_together = [['follower', 'following']]
