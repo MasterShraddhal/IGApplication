@@ -19,8 +19,8 @@ class ListFollowingUsers(ListAPIView,GenericAPIView):
         user=self.request.user
         fobjs=FollowerInfo.objects.filter(follower_id=user)
         print(fobjs[0])
+        return fobjs
         
-
 
 class FollowUsers(CreateAPIView,GenericAPIView):
     queryset=FollowerInfo.objects.all()

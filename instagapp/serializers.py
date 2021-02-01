@@ -20,10 +20,10 @@ class UpdateUserSerializer(ModelSerializer):
 
 
 class ListFollowingSerializers(ModelSerializer):
-    following_id=UserSerializer(many=True)
+    following=UserSerializer()
     class Meta:
         model=FollowerInfo
-        fields=['id','following_id']
+        fields=['id','following_id','following']
 
 
 
