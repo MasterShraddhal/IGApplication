@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from instagapp.views import RegUser,RetrieveUser,CustomAuthToken,FollowUsers,Unfollowuser,ListFollowingUsers
+from instagapp.views import RegUser,RetrieveUser,CustomAuthToken,FollowUsers,Unfollowuser,ListFollowingUsers,ListFollowersInfo
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,4 +25,5 @@ urlpatterns = [
     path('followuser/',FollowUsers.as_view()),
     path('unfollowuser/<int:pk>/',Unfollowuser.as_view()),
     path('listfollowingusers/',ListFollowingUsers.as_view()),
+    path('listfollowersusers/',ListFollowersInfo.as_view()),
 ]

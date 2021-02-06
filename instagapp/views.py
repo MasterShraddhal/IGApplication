@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .serializers import UserSerializer, UpdateUserSerializer, FollowerSerializer, ListFollowingSerializers
+from .serializers import UserSerializer, UpdateUserSerializer, FollowerSerializer, ListFollowingSerializers,ListFollowersSerializers
 from .models import User, FollowerInfo
 from rest_framework.generics import GenericAPIView, CreateAPIView, ListAPIView, RetrieveAPIView, DestroyAPIView, UpdateAPIView
 from rest_framework.permissions import AllowAny, BasePermission, IsAuthenticated
@@ -18,9 +18,47 @@ class ListFollowingUsers(ListAPIView, GenericAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        param=self.request.query_params
         user = self.request.user
-        fobjs = FollowerInfo.objects.filter(follower_id=user)
-        return fobjs
+        id=param.get('id',None)
+        if id==None:
+            qs = FollowerInfo.objects.filter(follower_id=user)
+        else:
+            if int(id)==user.id:
+                qs = FollowerInfo.objects.filter(follower_id=user)
+            else:
+                fobjs=FollowerInfo.objects.filter(following_id=int(id)).filter(follower_id=user.id).filter(status="Accepted").first()
+                if fobjs:
+                    qs=FollowerInfo.objects.filter(follower_id=int(id)).filter(status="Accepted")
+                else:
+                    raise Exception("you do not have permission to access data of this user!!!")
+        return qs
+
+class ListFollowersInfo(ListAPIView,GenericAPIView):
+    serializer_class=ListFollowersSerializers
+    authentication_classes=[TokenAuthentication]
+    permission_classes=[IsAuthenticated]
+
+    def get_queryset(self):
+        param=self.request.query_params
+        user=self.request.user
+        status=param.get('status',None)
+        id=param.get('id',None)
+        if id==None:
+            if status!=None:
+                qs=FollowerInfo.objects.filter(following_id=user.id).filter(status=status)
+            elif status==None:
+                qs=FollowerInfo.objects.filter(following_id=user.id)
+        else:
+            if int(id)==user.id:
+                qs=FollowerInfo.objects.filter(following_id=user.id)
+            else:
+                uobj=FollowerInfo.objects.filter(following_id=int(id)).filter(follower_id=user.id).filter(status="Accepted").first()
+                if uobj:
+                    qs=FollowerInfo.objects.filter(following_id=int(id)).filter(status="Accepted")
+                else:
+                    raise Exception("you do not have permission to access data of this user!!!")
+        return qs
 
 
 class FollowUsers(CreateAPIView, GenericAPIView):
@@ -78,6 +116,18 @@ class RetrieveUser(DestroyAPIView, RetrieveAPIView, UpdateAPIView, GenericAPIVie
     # serializer_class=UserSerializer
     authentication_classes = [TokenAuthentication]
     permission_classes = [CustomUserPermission]
+
+    def retrieve(self,request,*args,**kwargs):
+        user=self.get_object()
+        followers=user.following.count()
+        followings=user.followers.count()
+        ser_class=self.get_serializer_class()
+        ser_data=ser_class(user)
+        data=ser_data.data
+        data['followers']=followers
+        data['followings']=followings
+        return Response(data=data)
+        
 
     def get_serializer_class(self):
         if self.request.method == "PUT" or self.request.method == "PATCH":

@@ -32,6 +32,14 @@ class ListFollowingSerializers(ModelSerializer):
         fields = ['id', 'following']
 
 
+class ListFollowersSerializers(ModelSerializer):
+    follower = UserSerializer(read_only=True)
+
+    class Meta:
+        model = FollowerInfo
+        fields = ['id', 'follower']
+
+
 class FollowerSerializer(ModelSerializer):
     class Meta:
         model = FollowerInfo
